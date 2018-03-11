@@ -16,6 +16,8 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 
 class ExoMainActivity : AppCompatActivity() {
 
@@ -70,14 +72,16 @@ class ExoMainActivity : AppCompatActivity() {
         player?.playWhenReady = playWhenReady
         player?.seekTo(currentWindow, playbackPosition)
 
-        val uri: Uri = Uri.parse(getString(R.string.app_name))
+        val uri: Uri = Uri.parse(getString(R.string.video_link))
         val mediaResource: MediaSource = buildMediaSource(uri)
         player?.prepare(mediaResource, true, true)
     }
 
     private fun buildMediaSource(uri: Uri) : MediaSource {
-        return ExtractorMediaSource.Factory(DefaultHttpDataSourceFactory("exoplayer-codelab"))
-                .createMediaSource(uri)
+        val extractorsFactory = DefaultExtractorsFactory()
+        val dataSourceFactory = DefaultHttpDataSourceFactory("user-agent")
+        val videoSource = ExtractorMediaSource.Factory(DefaultHttpDataSourceFactory("exoplayer-codelab")).createMediaSource(uri)
+        return ConcatenatingMediaSource(videoSource)
     }
 
     private fun releasePlayer() {
